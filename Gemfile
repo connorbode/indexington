@@ -4,5 +4,5 @@ gem 'nokogiri'
 
 group 'test' do
   gem 'rspec'
-  gem 'pry-debugger'
+  gem 'byebug'
 end
