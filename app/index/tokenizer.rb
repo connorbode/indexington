@@ -32,8 +32,9 @@ class Tokenizer
     if @options[:case_fold] then token = token.downcase end
     if @options[:remove_numbers] and token.match @@number_regex then token = nil end
     if @options[:rules] then
-      @options[:rules].each do |rule|
-
+      @options[:rules].map do |rule, replace|
+        regex = Regexp.new rule
+        token.gsub! regex, replace
       end
     end
     token
