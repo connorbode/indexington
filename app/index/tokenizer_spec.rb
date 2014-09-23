@@ -55,4 +55,27 @@ describe 'Tokenizer' do
     token = t.normalize 'July'
     expect(token).to eq 'Julytest'
   end
+
+  it "should replace new lines by default" do
+    t = Tokenizer.new
+    tokens = t.tokenize 'test\ntest'
+    expect(tokens.length).to eq 2
+    expect(tokens[0]).to eq 'test'
+    expect(tokens[1]).to eq 'test'
+  end
+
+  it "should replace new lines with spaces if set true" do
+    t = Tokenizer.new replace_newline: true
+    tokens = t.tokenize 'test\ntest'
+    expect(tokens.length).to eq 2
+    expect(tokens[0]).to eq 'test'
+    expect(tokens[1]).to eq 'test'
+  end
+
+  it "should not replace new lines with spaces if set to false" do
+    t = Tokenizer.new replace_newline: false
+    tokens = t.tokenize 'test\ntest'
+    expect(tokens.length).to eq 1
+    expect(tokens[0]).to eq 'test\ntest'
+  end
 end

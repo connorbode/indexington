@@ -2,6 +2,7 @@ require 'byebug'
 
 # 
 # Tokenizer.new {
+#   :split => regex to split on
 #   :case_fold => true,
 #   :methods => [ Procs or Lambdas]
 #   :rules => { regex rule => regex replace}
@@ -18,7 +19,9 @@ class Tokenizer
 
   # tokenize input
   def tokenize input
-    normalize_list input.split ' '
+    input = input.gsub /\\n/, ' ' if @options[:replace_newline] == true or @options[:replace_newline].nil?
+    r = if @options[:split] then Regexp.new @options[:split] else Regexp.new ' ' end
+    normalize_list input.split r
   end
 
   # normalize the tokenized list
