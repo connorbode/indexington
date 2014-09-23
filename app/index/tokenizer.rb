@@ -3,7 +3,8 @@ require 'byebug'
 # 
 # Tokenizer.new {
 #   :case_fold => true,
-#   :ignore_numbers => true
+#   :methods => [ Procs or Lambdas]
+#   :rules => { regex rule => regex replace}
 # }
 # 
 
@@ -30,11 +31,15 @@ class Tokenizer
   # normalize a single token
   def normalize token
     if @options[:case_fold] then token = token.downcase end
-    if @options[:remove_numbers] and token.match @@number_regex then token = nil end
     if @options[:rules] then
       @options[:rules].map do |rule, replace|
         regex = Regexp.new rule
         token.gsub! regex, replace
+      end
+    end
+    if @options[:methods] then
+      @options[:methods].each do |method|
+        token = method.call(token)
       end
     end
     token

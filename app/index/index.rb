@@ -13,7 +13,8 @@ require 'nokogiri'
 #   :fragment => true,
 #   :elements => [
 #     { :tag => 'title' }
-#   ]
+#   ],
+#   :tokenizer => # tokenizer options
 # })
 
 class Index

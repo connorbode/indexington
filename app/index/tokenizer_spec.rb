@@ -45,4 +45,14 @@ describe 'Tokenizer' do
     token = t.normalize 'July,'
     expect(token).to eq 'July'
   end
+
+  it "should run any supplied methods" do
+    t = Tokenizer.new({
+      :methods => [
+        lambda{|token| return "#{token}test"}
+      ]
+    })
+    token = t.normalize 'July'
+    expect(token).to eq 'Julytest'
+  end
 end
