@@ -1,4 +1,3 @@
-require 'byebug'
 
 # 
 # Tokenizer.new {
@@ -19,7 +18,9 @@ class Tokenizer
 
   # tokenize input
   def tokenize input
-    input = input.gsub /\\n/, ' ' if @options[:replace_newline] == true or @options[:replace_newline].nil?
+    if @options[:preprocessing] then
+      @options[:preprocessing].each { |method| input = method.call input }
+    end
     r = if @options[:split] then Regexp.new @options[:split] else Regexp.new ' ' end
     normalize_list input.split r
   end
@@ -28,24 +29,17 @@ class Tokenizer
   def normalize_list tokens
     tokens.map! { |t| normalize t }
     tokens.compact!
-    tokens
+    return tokens
   end
 
   # normalize a single token
   def normalize token
-    if @options[:case_fold] then token = token.downcase end
-    if @options[:rules] then
-      @options[:rules].map do |rule, replace|
-        regex = Regexp.new rule
-        token.gsub! regex, replace
-      end
-    end
-    if @options[:methods] then
-      @options[:methods].each do |method|
+    if @options[:token_processing] then
+      @options[:token_processing].each do |method|
         token = method.call(token)
       end
     end
     token = nil if token.empty?
-    token
+    return token
   end
 end
