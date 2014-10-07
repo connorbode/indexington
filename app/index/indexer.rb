@@ -1,4 +1,5 @@
 require 'nokogiri'
+require 'objspace'
 require_relative './tokenizer.rb'
 require_relative './postings_list.rb'
 
@@ -26,17 +27,22 @@ class Index
     @options = options
     @tokenizer = Tokenizer.new @options[:tokenizer]
     @dictionary = {}
+    @dumps = 0
   end
 
   # loads the file & parses
   def parse file
     doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
-    doc.children().each { |article| parse_article article }
+    doc.children().each do |article| 
+      parse_article article
+    end
   end
 
   # parses a single article
   def parse_article article
     @options[:elements].each do |elem_desc|
+      usage = ObjectSpace.memsize_of_all
+      puts "Estimating memory usage as #{usage} bytes"
       elem = article.css(elem_desc[:tag])
       tokens = @tokenizer.tokenize elem.text
       tokens.each.with_index(1) do |token, index|

@@ -1,6 +1,6 @@
 require 'fast_stemmer'
 require 'byebug'
-require_relative('index/index.rb')
+require_relative('index/indexer.rb')
 
 begin
 
