@@ -22,7 +22,7 @@ class Tokenizer
       @options[:preprocessing].each { |method| input = method.call input }
     end
     r = if @options[:split] then Regexp.new @options[:split] else Regexp.new ' ' end
-    normalize_list input.split r
+    return normalize_list input.split r
   end
 
   # normalize the tokenized list
