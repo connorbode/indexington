@@ -67,11 +67,24 @@ class Index
     end
   end
 
-  # dumps the dictionary to a file
-  def dump_dictionary file
-    open file, 'w' do |f|
-      Hash[@dictionary.sort].map do |key, value|
-        f.puts "#{key}\n"
+  # dumps the index to a file
+  def dump dict_file_name, postings_file_name
+    postings_file_head = 0
+    File.open dict_file_name, 'w' do |dict_file|
+      File.open postings_file_name, 'w' do |postings_file|
+        Hash[@dictionary.sort].map do |term, postings|
+          dict_file.print "#{term}:#{postings_file_head};"
+          postings.list.each_with_index do |posting, index|
+            s = posting[:document].to_s
+            postings_file.print s
+            postings_file_head += s.length + 1
+            if index == postings.list.size - 1 then 
+              postings_file.print ";"
+            else
+              postings_file.print ","
+            end
+          end
+        end
       end
     end
   end
