@@ -26,7 +26,11 @@ begin
   filenames = Dir[ARGV[0]]
   raise "No files found" if filenames.length < 1
 
-  files = filenames.map { |filename| File.read(filename) }
+  filenames.each do |filename| 
+    file = File.read filename 
+    puts "parsing #{filename}"
+    index.parse file 
+  end 
 
   files.each { |file| index.parse file }
   index.dump_dictionary ARGV[1]
