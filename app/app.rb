@@ -20,6 +20,11 @@ begin
         lambda { |token| return token.gsub /[0-9\.,"()<>\';:\[\]{}]/, '' },
         lambda { |token| return token.stem }
       ]
+    },
+    :write => {
+      :postings => "index/postings/",
+      :tmp => "index/tmp/",
+      :dump_limit => 1000
     }
   })
 
@@ -32,8 +37,7 @@ begin
     index.parse file 
   end 
 
-  files.each { |file| index.parse file }
-  index.dump_dictionary ARGV[1]
+  index.dump ARGV[1], ARGV[2]
 
 rescue Exception => e
   puts e.message
