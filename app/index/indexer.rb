@@ -27,7 +27,8 @@ class Index
     @options = options
     @tokenizer = Tokenizer.new @options[:tokenizer]
     @dictionary = {}
-    @dumps = 0
+    @dump_size = 0
+    @doc_id = 0
   end
 
   # loads the file & parses
@@ -45,14 +46,24 @@ class Index
   # parses a single article
   def parse_article article
     @options[:elements].each do |elem_desc|
-      usage = ObjectSpace.memsize_of_all
-      puts "Estimating memory usage as #{usage} bytes"
       elem = article.css(elem_desc[:tag])
       tokens = @tokenizer.tokenize elem.text
-      tokens.each.with_index(1) do |token, index|
-        @dictionary[token] = PostingsList.new if @dictionary[token].nil?
-        @dictionary[token].add elem.text, index
-      end
+      tokens.each.with_index(1) { |token, index| parse_token token, index }
+    end
+  end
+
+  # parses a single token
+  def parse_token token, index
+    if @dictionary[token].nil? then
+      @dictionary[token] = PostingsList.new
+    end
+    @dictionary[token].add @doc_id, index
+  end
+
+  # writes a single article to disk
+  def write_article article
+    File.open (@options[:write][:postings] + @doc_id.to_s), 'w' do |f|
+      article.write_xml_to f
     end
   end
 
