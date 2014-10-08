@@ -34,7 +34,11 @@ class Index
   def parse file
     doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
     doc.children().each do |article| 
-      parse_article article
+      if article.kind_of? Nokogiri::XML::Element then
+        parse_article article
+        write_article article if @options[:write][:postings]
+        @doc_id += 1
+      end
     end
   end
 
