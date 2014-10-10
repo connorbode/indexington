@@ -20,7 +20,7 @@ require_relative './postings_list.rb'
 #   :tokenizer => # tokenizer options
 # })
 
-class Index
+class Indexer
 
   # initializes the indexer on the supplied directory
   def initialize index_dir, options

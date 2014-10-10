@@ -4,7 +4,7 @@ require_relative('index/indexer.rb')
 
 begin
 
-  index = Index.new('', {
+  index = Indexer.new('', {
     :fragment => true,
     :elements => [
       { :tag => 'TITLE' }
