@@ -22,9 +22,12 @@ begin
       ]
     },
     :write => {
+      :index => "index/"
       :postings => "index/postings/",
-      :tmp => "index/tmp/",
-      :dump_limit => 1000
+      :dump => {
+        :postings_prefix => "index/tmp/post",
+        :dictionary_prefix => "index/tmp/dict"
+      }
     }
   })
 
@@ -36,8 +39,6 @@ begin
     puts "parsing #{filename}"
     index.parse file 
   end 
-
-  index.dump ARGV[1], ARGV[2]
 
 rescue Exception => e
   puts e.message

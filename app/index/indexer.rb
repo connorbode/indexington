@@ -27,37 +27,52 @@ class Indexer
     @options = options
     @tokenizer = Tokenizer.new @options[:tokenizer]
     @dictionary = {}
-    @dump_size = 0
     @doc_id = 0
+    @dump_ctr = 0
   end
 
   # loads the file & parses
   def parse file
-    doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
-    doc.children().each do |article| 
-      if article.kind_of? Nokogiri::XML::Element then
-        parse_article article
-        write_article article if @options[:write][:postings]
-        @doc_id += 1
+    begin
+      doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
+      doc.children().each do |article| 
+        if article.kind_of? Nokogiri::XML::Element then
+          parse_article article
+          write_article article if @options[:write][:postings]
+          @doc_id += 1
+        end
       end
+    rescue NoMemoryError
+      dump
+      parse file
     end
   end
 
   # parses a single article
   def parse_article article
-    @options[:elements].each do |elem_desc|
-      elem = article.css(elem_desc[:tag])
-      tokens = @tokenizer.tokenize elem.text
-      tokens.each.with_index(1) { |token, index| parse_token token, index }
+    begin
+      @options[:elements].each do |elem_desc|
+        elem = article.css(elem_desc[:tag])
+        tokens = @tokenizer.tokenize elem.text
+        tokens.each.with_index(1) { |token, index| parse_token token, index }
+      end
+    rescue NoMemoryError
+      dump
+      parse_article article
     end
   end
 
   # parses a single token
   def parse_token token, index
-    if @dictionary[token].nil? then
-      @dictionary[token] = PostingsList.new
+    begin
+      if @dictionary[token].nil? then
+        @dictionary[token] = PostingsList.new
+      end
+      @dictionary[token].add @doc_id
+    rescue NoMemoryError
+      dump
+      parse_token token, index
     end
-    @dictionary[token].add @doc_id, index
   end
 
   # writes a single article to disk
@@ -68,7 +83,10 @@ class Indexer
   end
 
   # dumps the index to a file
-  def dump dict_file_name, postings_file_name
+  def dump
+    dict_file_name = @options[:write][:dump][:dictionary_prefix] + @dump_ctr.to_s
+    postings_file_name = @options[:write][:dump][:postings_prefix] + @dump_ctr.to_s
+    puts "dumping tmp index #{@dump_ctr.to_s}"
     postings_file_head = 0
     File.open dict_file_name, 'w' do |dict_file|
       File.open postings_file_name, 'w' do |postings_file|
@@ -87,5 +105,7 @@ class Indexer
         end
       end
     end
+    @dump_ctr += 1
+    @dictionary = {}
   end
 end
