@@ -37,7 +37,7 @@ class Merger
     if File.exists? @options[:destination] then
       random_number = rand(10000)
       @tmp = "#{@options[:destination]}.#{random_number}.tmp"
-      @options[:sources].push @tmp
+      @sources.push { |source| File.open @tmp }
       FileUtils.copy_file @options[:destination], @tmp
     end
     return @tmp
