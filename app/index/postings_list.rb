@@ -8,10 +8,10 @@ class PostingsList
   end
 
   # adds an occurrence to a postings list
-  def add document, position
+  def add document
+    raise NoMemoryError if @list.length > 20 
     @list.push({
-      :document => document,
-      :position => position
+      :document => document
     })
   end
 end
