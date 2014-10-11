@@ -14,6 +14,17 @@ describe 'Merger' do
     end
   end
 
+  describe 'get_next_postings_list' do
+    it 'gets the next postings list' do
+      p0 = File.expand_path 'spec/fixtures/i0.post'
+      i = { postings_lists: File.open(p0) }
+      m = Merger.new destination: '', sources: []
+      expect(m.get_next_postings_list i).to eq '12,162'
+      expect(m.get_next_postings_list i).to eq '155'
+      expect(m.get_next_postings_list i).to eq '48'
+    end
+  end
+
   describe 'merge' do
     it 'merges two files' do
       dest = File.expand_path 'spec/fixtures/dest'

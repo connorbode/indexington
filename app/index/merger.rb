@@ -68,4 +68,16 @@ class Merger
     return {term: term, doc_id: doc_id}
   end
 
+  # retrieves the next postings list from a source
+  def get_next_postings_list s
+    list = ""
+    loop do
+      char = s[:postings_lists].gets 1
+      return nil if char.nil?
+      break if char == ";"
+      list << char
+    end
+    return list
+  end
+
 end
