@@ -2,6 +2,13 @@ require_relative './merger.rb'
 
 describe 'Merger' do
 
+  after(:all) do
+    dest_dictionary = File.expand_path 'spec/fixtures/dest.dict'
+    dest_postings_list = File.expand_path 'spec/fixtures/dest.post'
+    File.delete(dest_dictionary)
+    File.delete(dest_postings_list)
+  end
+
   describe 'get_next_term' do
     it 'gets the next term properly' do
       i0 = File.expand_path 'spec/fixtures/i0.dict'
