@@ -39,11 +39,10 @@ class Merger
   # returns number of characters written
   def write_postings_list post, sources
     postings_lists = sources.map { |source| { list: source[:postings_lists], more: true } }
-    # byebug
     postings_lists.each { |list| list[:next_post] = get_next_post list[:list] }
 
     loop do
-      postings_lists.sort_by { |list| list[:next_post][:post] }
+      postings_lists.sort_by! { |list| list[:next_post][:post] }
       post.print "#{postings_lists[0][:next_post][:post]}"
       if postings_lists[0][:next_post][:last] then
         postings_lists.delete_at 0 

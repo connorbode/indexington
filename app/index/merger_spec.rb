@@ -38,6 +38,19 @@ describe 'Merger' do
       r = dest.read
       expect(r).to eq '12,162,194;'
     end
+
+    it 'merges three postings lists' do
+      p0 = File.open(File.expand_path 'spec/fixtures/i0.post')
+      p1 = File.open(File.expand_path 'spec/fixtures/i1.post')
+      p2 = File.open(File.expand_path 'spec/fixtures/i2.post')
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'), 'w')
+      m = Merger.new destination: '', sources: []
+      m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p1}, {postings_lists: p2}]
+      dest.close
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'))
+      r = dest.read
+      expect(r).to eq '2,12,162,194,1002,10000;'
+    end
   end
 
   # describe 'get_next_postings_list' do
