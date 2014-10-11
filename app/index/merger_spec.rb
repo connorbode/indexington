@@ -73,5 +73,18 @@ describe 'Merger' do
       expect(d).to eq "afg:0;against:7;agenc:11;agricultur:18;ahead:22;"
       expect(p).to eq "12,162;155;48,194;234;233;"
     end
+
+    it 'merges three indexes' do
+      dest = File.expand_path 'spec/fixtures/dest'
+      i0 = File.expand_path 'spec/fixtures/i0'
+      i1 = File.expand_path 'spec/fixtures/i1'
+      i2 = File.expand_path 'spec/fixtures/i2'
+      m = Merger.new destination: dest, sources: [i2, i1, i0]
+      m.merge
+      d = File.open(dest + '.dict').read
+      p = File.open(dest + '.post').read
+      expect(d).to eq "afg:0;against:7;agenc:11;agricultur:18;ahead:35;"
+      expect(p).to eq "12,162;155;48,194;2,234,1002,10000;233;"
+    end
   end
 end
