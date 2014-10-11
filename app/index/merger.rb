@@ -22,16 +22,42 @@ class Merger
   def merge
     dict = File.open @options[:destination] + '.dict', 'w'
     post = File.open @options[:destination] + '.post', 'w'
+    postings_head = 0
     @sources.each { |source| source[:term] = get_next_term(source) }
 
     loop do
-      @sources.sort_by { |source| source[:term] }
-      this_term = [@sources[0]]
-      postings_list = get_next_postings_list @sources[0]
-      dict.print @sources[]
+      @sources.sort_by! { |source| source[:term][:term] }
+      postings_sources = [@sources[0]]
+      i = 1
+      loop do
+        if not @sources[i].nil? and @sources[0][:term][:term] == @sources[i][:term][:term] then
+          # byebug
+          postings_sources << @sources[i]
+          i += 1
+        else
+          break
+        end
+      end
+      dict.print "#{@sources[0][:term][:term]}:#{postings_head};"
+      postings_head += write_postings_list post, postings_sources
+
+      lim = postings_sources.length
+      i = 0
+      while i < lim do
+        @sources[i][:term] = get_next_term(@sources[i])
+        # byebug
+        if @sources[i][:term].nil? then
+          @sources.delete_at i
+          lim -= 1
+        else
+          i += 1
+        end
+      end
+      break if @sources.empty?
     end
 
     dict.close
+    post.close
   end
 
   # reads from postings lists in sources
@@ -40,10 +66,12 @@ class Merger
   def write_postings_list post, sources
     postings_lists = sources.map { |source| { list: source[:postings_lists], more: true } }
     postings_lists.each { |list| list[:next_post] = get_next_post list[:list] }
-
+    chars = 0
     loop do
       postings_lists.sort_by! { |list| list[:next_post][:post] }
-      post.print "#{postings_lists[0][:next_post][:post]}"
+      p = postings_lists[0][:next_post][:post].to_s
+      chars += p.length + 1
+      post.print p
       if postings_lists[0][:next_post][:last] then
         postings_lists.delete_at 0 
       else 
@@ -53,6 +81,7 @@ class Merger
       post.print ","
     end
     post.print ";"
+    return chars
   end
 
   # gets the next post from a postings list
@@ -90,17 +119,5 @@ class Merger
     end
     return {term: term, post_ptr: post_ptr}
   end
-
-  # # retrieves the next postings list from a source
-  # def get_next_postings_list s
-  #   list = []
-  #   loop do
-  #     char = s[:postings_lists].gets 1
-  #     return nil if char.nil?
-  #     break if char == ";"
-  #     list << char
-  #   end
-  #   return list
-  # end
 
 end

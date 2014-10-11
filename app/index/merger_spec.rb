@@ -45,34 +45,26 @@ describe 'Merger' do
       p2 = File.open(File.expand_path 'spec/fixtures/i2.post')
       dest = File.open(File.expand_path('spec/fixtures/dest.post'), 'w')
       m = Merger.new destination: '', sources: []
-      m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p1}, {postings_lists: p2}]
+      num_written = m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p1}, {postings_lists: p2}]
       dest.close
       dest = File.open(File.expand_path('spec/fixtures/dest.post'))
       r = dest.read
+      expect(num_written).to eq 24
       expect(r).to eq '2,12,162,194,1002,10000;'
     end
   end
 
-  # describe 'get_next_postings_list' do
-  #   it 'gets the next postings list' do
-  #     p0 = File.expand_path 'spec/fixtures/i0.post'
-  #     i = { postings_lists: File.open(p0) }
-  #     m = Merger.new destination: '', sources: []
-  #     expect(m.get_next_postings_list i).to eq '12,162'
-  #     expect(m.get_next_postings_list i).to eq '155'
-  #     expect(m.get_next_postings_list i).to eq '48'
-  #   end
-  # end
-
-  # describe 'merge' do
-  #   it 'merges two files' do
-  #     dest = File.expand_path 'spec/fixtures/dest'
-  #     i0 = File.expand_path 'spec/fixtures/i0'
-  #     i1 = File.expand_path 'spec/fixtures/i1'
-  #     m = Merger.new destination: dest, sources: [i0, i1]
-  #     m.merge
-  #     d = File.open(dest + '.dict').read
-  #     expect(d).to eq "afg:0;against:8;agenc:0,12;agricultur:4;ahead:8;"
-  #   end
-  # end
+  describe 'merge' do
+    it 'merges two files' do
+      dest = File.expand_path 'spec/fixtures/dest'
+      i0 = File.expand_path 'spec/fixtures/i0'
+      i1 = File.expand_path 'spec/fixtures/i1'
+      m = Merger.new destination: dest, sources: [i0, i1]
+      m.merge
+      d = File.open(dest + '.dict').read
+      p = File.open(dest + '.post').read
+      expect(d).to eq "afg:0;against:7;agenc:11;agricultur:18;ahead:22;"
+      expect(p).to eq "12,162;155;48,194;234;233;"
+    end
+  end
 end
