@@ -59,6 +59,18 @@ describe 'Merger' do
       expect(num_written).to eq 24
       expect(r).to eq '2,12,162,194,1002,10000;'
     end
+
+    it 'does not add duplicate posts' do
+      p0 = File.open(File.expand_path 'spec/fixtures/i0.post')
+      p3 = File.open(File.expand_path 'spec/fixtures/i3.post')
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'), 'w')
+      m = Merger.new destination: '', sources: []
+      m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p3}]
+      dest.close
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'))
+      r = dest.read
+      expect(r).to eq '12,14,16,162;'
+    end
   end
 
   describe 'merge' do
