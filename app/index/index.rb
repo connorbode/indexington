@@ -29,6 +29,7 @@ class Index
       break if char.nil?
       dictionary[term] = position
     end
+    dict.close
     return dictionary
   end
 
