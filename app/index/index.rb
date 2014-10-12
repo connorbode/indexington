@@ -66,7 +66,8 @@ class Index
     puts "searching for #{terms}"
     postings = []
     terms.each do |term|
-      postings.concat get_postings_list(@dictionary[term].to_i)
+      post_pointer = @dictionary[term]
+      postings = postings && get_postings_list(post_pointer.to_i) if not post_pointer.nil?
     end
     return postings.sort.uniq
   end
