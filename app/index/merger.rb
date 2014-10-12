@@ -4,8 +4,6 @@
 # options
 # - dest_dir : the directory where the final index should be put
 
-require 'byebug'
-
 class Merger
 
   # initializes the merger
@@ -31,7 +29,6 @@ class Merger
       i = 1
       loop do
         if not @sources[i].nil? and @sources[0][:term][:term] == @sources[i][:term][:term] then
-          # byebug
           postings_sources << @sources[i]
           i += 1
         else
@@ -45,7 +42,6 @@ class Merger
       i = 0
       while i < lim do
         @sources[i][:term] = get_next_term(@sources[i])
-        # byebug
         if @sources[i][:term].nil? then
           @sources.delete_at i
           lim -= 1
@@ -67,18 +63,20 @@ class Merger
     postings_lists = sources.map { |source| { list: source[:postings_lists], more: true } }
     postings_lists.each { |list| list[:next_post] = get_next_post list[:list] }
     chars = 0
+    last_post = nil
     loop do
       postings_lists.sort_by! { |list| list[:next_post][:post] }
       p = postings_lists[0][:next_post][:post].to_s
       chars += p.length + 1
-      post.print p
+      post.print p if p != last_post
       if postings_lists[0][:next_post][:last] then
         postings_lists.delete_at 0 
       else 
         postings_lists[0][:next_post] = get_next_post postings_lists[0][:list]
       end
       break if postings_lists.empty?
-      post.print ","
+      post.print "," if p != last_post
+      last_post = p
     end
     post.print ";"
     return chars
