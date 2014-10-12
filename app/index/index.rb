@@ -5,6 +5,7 @@ class Index
   def initialize options
     @options = options
     @dictionary = load_dictionary
+    @postings_lists = open_postings_lists
   end
 
   # loads the dictionary into memory
@@ -29,5 +30,28 @@ class Index
       dictionary[term] = position
     end
     return dictionary
+  end
+
+  # opens the postings list file
+  def open_postings_lists
+    return File.open(@options[:index] + '.post')
+  end
+
+  # retrieves the postings list from a given position
+  def get_postings_list position
+    @postings_lists.seek position
+    list = []
+    loop do
+      post = ""
+      char = ""
+      loop do
+        char = @postings_lists.gets 1
+        break if char == "," or char == ";"
+        post << char
+      end 
+      list << post.to_i
+      break if char == ";"
+    end
+    return list
   end
 end
