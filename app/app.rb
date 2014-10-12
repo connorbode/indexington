@@ -1,6 +1,7 @@
 require 'fast_stemmer'
 require 'byebug'
 require_relative('index/indexer.rb')
+require_relative('index/merger.rb')
 
 begin
 
@@ -22,12 +23,8 @@ begin
       ]
     },
     :write => {
-      :index => "index/"
       :postings => "index/postings/",
-      :dump => {
-        :postings_prefix => "index/tmp/post",
-        :dictionary_prefix => "index/tmp/dict"
-      }
+      :tmp_folder => "index/tmp/i"
     }
   })
 
@@ -39,6 +36,12 @@ begin
     puts "parsing #{filename}"
     index.parse file 
   end 
+
+  destination = File.expand_path "index/index"
+  sources = Dir["index/tmp/*"].map!{|s| s[0..-6]}.uniq!.map!{|s| File.expand_path s}
+  merger = Merger.new ({ destination: destination, sources: sources })
+  puts "merging master index"
+  merger.merge
 
 rescue Exception => e
   puts e.message

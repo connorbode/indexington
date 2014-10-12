@@ -84,8 +84,8 @@ class Indexer
 
   # dumps the index to a file
   def dump
-    dict_file_name = @options[:write][:dump][:dictionary_prefix] + @dump_ctr.to_s
-    postings_file_name = @options[:write][:dump][:postings_prefix] + @dump_ctr.to_s
+    dict_file_name = @options[:write][:tmp_folder] + @dump_ctr.to_s + '.dict'
+    postings_file_name = @options[:write][:tmp_folder] + @dump_ctr.to_s + '.post'
     puts "dumping tmp index #{@dump_ctr.to_s}"
     postings_file_head = 0
     File.open dict_file_name, 'w' do |dict_file|
