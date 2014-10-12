@@ -1,3 +1,6 @@
+require_relative './tokenizer.rb'
+require 'byebug'
+
 class Index
 
   attr_accessor :dictionary
@@ -6,6 +9,7 @@ class Index
     @options = options
     @dictionary = load_dictionary
     @postings_lists = open_postings_lists
+    @tokenizer = Tokenizer.new @options[:tokenizer]
   end
 
   # loads the dictionary into memory
@@ -54,5 +58,15 @@ class Index
       break if char == ";"
     end
     return list
+  end
+
+  # performs a query
+  def query q
+    terms = @tokenizer.tokenize q
+    postings = []
+    terms.each do |term|
+      postings.concat get_postings_list(@dictionary[term].to_i)
+    end
+    return postings.sort.uniq
   end
 end

@@ -15,8 +15,8 @@ describe 'Merger' do
       d = { dictionary: File.open(i0) }
       m = Merger.new destination: i0, sources: []
       expect(m.get_next_term d).to eq({term: 'afg', post_ptr: '0'})
-      expect(m.get_next_term d).to eq({term: 'against', post_ptr: '8'})
-      expect(m.get_next_term d).to eq({term: 'agenc', post_ptr: '12'})
+      expect(m.get_next_term d).to eq({term: 'against', post_ptr: '7'})
+      expect(m.get_next_term d).to eq({term: 'agenc', post_ptr: '11'})
       expect(m.get_next_term d).to eq(nil)
     end
   end
