@@ -63,13 +63,24 @@ describe 'Merger' do
     it 'does not add duplicate posts' do
       p0 = File.open(File.expand_path 'spec/fixtures/i0.post')
       p3 = File.open(File.expand_path 'spec/fixtures/i3.post')
+      p4 = File.open(File.expand_path 'spec/fixtures/i4.post')
+      p5 = File.open(File.expand_path 'spec/fixtures/i5.post')
       dest = File.open(File.expand_path('spec/fixtures/dest.post'), 'w')
       m = Merger.new destination: '', sources: []
-      m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p3}]
+      num_written = m.write_postings_list dest, [{postings_lists: p0}, {postings_lists: p3}]
       dest.close
       dest = File.open(File.expand_path('spec/fixtures/dest.post'))
       r = dest.read
       expect(r).to eq '12,14,16,162;'
+      expect(num_written).to eq 13
+      dest.close
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'), 'w')
+      num_written = m.write_postings_list dest, [{postings_lists: p4}, {postings_lists: p5}]
+      dest.close
+      dest = File.open(File.expand_path('spec/fixtures/dest.post'))
+      r = dest.read
+      expect(r).to eq '12;'
+      expect(num_written).to eq 3
     end
   end
 

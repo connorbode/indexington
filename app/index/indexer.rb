@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'objspace'
+require 'byebug'
 require_relative './tokenizer.rb'
 require_relative './postings_list.rb'
 
@@ -93,7 +94,7 @@ class Indexer
         Hash[@dictionary.sort].map do |term, postings|
           dict_file.print "#{term}:#{postings_file_head};"
           postings.list.each_with_index do |posting, index|
-            s = posting[:document].to_s
+            s = posting.to_s
             postings_file.print s
             postings_file_head += s.length + 1
             if index == postings.list.size - 1 then 

@@ -63,6 +63,7 @@ class Index
   # performs a query
   def query q
     terms = @tokenizer.tokenize q
+    puts "searching for #{terms}"
     postings = []
     terms.each do |term|
       postings.concat get_postings_list(@dictionary[term].to_i)

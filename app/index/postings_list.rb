@@ -10,8 +10,6 @@ class PostingsList
   # adds an occurrence to a postings list
   def add document
     raise NoMemoryError if @list.length > 20 
-    @list.push({
-      :document => document
-    })
+    @list.push document if not @list.include? document
   end
 end
