@@ -18,7 +18,7 @@ $options = {
     :split => '[ \/]',
     :token_processing => [
       lambda { |token| return token.downcase },
-      lambda { |token| return token.gsub /[0-9\.,"()<>\';:\[\]{}]/, '' },
+      lambda { |token| return token.gsub /[0-9\.,"()<>\';:\[\]{}+]/, '' },
       lambda { |token| return token.stem }
     ]
   },
