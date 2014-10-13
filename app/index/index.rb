@@ -67,7 +67,13 @@ class Index
     postings = []
     terms.each do |term|
       post_pointer = @dictionary[term]
-      postings = postings && get_postings_list(post_pointer.to_i) if not post_pointer.nil?
+      if not post_pointer.nil? then 
+        if postings.empty? then
+          postings = get_postings_list(post_pointer.to_i)
+        else
+          postings = postings & get_postings_list(post_pointer.to_i)
+        end
+      end
     end
     return postings.sort.uniq
   end
