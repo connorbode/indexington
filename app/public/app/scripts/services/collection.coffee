@@ -14,5 +14,6 @@ angular.module('uiApp')
         query: 
           method: 'GET',
           transformResponse: (response) ->
-            return x2js.xml_str2json(response)
+            obj = x2js.xml_str2json(response)
+            return obj
       })

@@ -13,7 +13,8 @@ angular.module('uiApp')
     # watch for query changes
     $scope.runQuery = (query) ->
       $scope.results = Collection.query({query: query}) if query != ""
-      $scope.results = [] if query == ""
+      $scope.results.$promise.then ->
+        console.log $scope.results
 
     $scope.viewArticle = (article) ->
       Route.viewArticle(article)
