@@ -8,6 +8,7 @@ require_relative('index/index.rb')
 $options = {
   :fragment => true,
   :elements => [
+    { :tag => 'BODY' },
     { :tag => 'TITLE' }
   ],
   :tokenizer => {
@@ -55,11 +56,18 @@ rescue Exception => e
 end
 
 # run server
+set :public_folder, File.expand_path('app/public/dist')
+
 get '/query/:query' do
   results = index.query params[:query]
-  xml_response = ""
+  xml_response = "<results>"
   results.each do |result|
     xml_response << File.open('index/postings/' + result.to_s).read
   end
+  xml_response << "</results>"
   xml_response
+end
+
+get '/' do
+  File.read(File.join('app', 'public', 'dist', 'index.html'))
 end

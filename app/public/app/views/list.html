@@ -1,0 +1,11 @@
+<div ng-show="route.current == 'list'">
+  <div class="jumbotron">
+    <input class="form-control" type="text" placeholder="Enter a query here" ng-model="query" ng-change="runQuery(query)" />
+  </div>
+  <h1>Results</h1>
+  <div class="row marketing">
+    <div ng-repeat="result in results">
+      <h4><a class="clickable" ng-click="viewArticle(result)">{{result.REUTERS.TEXT.TITLE}}</a></h4>
+    </div>
+  </div>
+</div>

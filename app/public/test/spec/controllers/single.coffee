@@ -1,17 +1,17 @@
 'use strict'
 
-describe 'Controller: MainCtrl', ->
+describe 'Controller: SinglectrlCtrl', ->
 
   # load the controller's module
   beforeEach module 'uiApp'
 
-  MainCtrl = {}
+  SinglectrlCtrl = {}
   scope = {}
 
   # Initialize the controller and a mock scope
   beforeEach inject ($controller, $rootScope) ->
     scope = $rootScope.$new()
-    MainCtrl = $controller 'MainCtrl', {
+    SinglectrlCtrl = $controller 'SinglectrlCtrl', {
       $scope: scope
     }
 
