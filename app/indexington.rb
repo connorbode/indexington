@@ -8,6 +8,8 @@ require_relative('index/index.rb')
 # stop lists
 $stop_30 = ['the', 'of', 'to', 'and', 'a', 'in', 'is', 'it', 'you', 'that', 'he', 'was', 'for', 'on', 'are', 'with', 'as', 'I', 'his', 'they', 'be', 'at', 'one', 'have', 'this', 'from', 'or', 'had', 'by', 'hot']
 $stop_150 = ['the', 'of', 'to', 'and', 'a', 'in', 'is', 'it', 'you', 'that', 'he', 'was', 'for', 'on', 'are', 'with', 'as', 'I', 'his', 'they', 'be', 'at', 'one', 'have', 'this', 'from', 'or', 'had', 'by', 'hot', 'but', 'some', 'what', 'there', 'we', 'can', 'out', 'other', 'were', 'all', 'your', 'when', 'up', 'use', 'word', 'how', 'said', 'an', 'each', 'she', 'which', 'do', 'their', 'time', 'if', 'will', 'way', 'about', 'many', 'then', 'them', 'would', 'write', 'like', 'so', 'these', 'her', 'long', 'make', 'thing', 'see', 'him', 'two', 'has', 'look', 'more', 'day', 'could', 'go', 'come', 'did', 'my', 'sound', 'no', 'most', 'number', 'who', 'over', 'know', 'water', 'than', 'call', 'first', 'people', 'may', 'down', 'side', 'been', 'now', 'find', 'any', 'new', 'work', 'part', 'take', 'get', 'place', 'made', 'live', 'where', 'after', 'back', 'little', 'only', 'round', 'man', 'year', 'came', 'show', 'every', 'good', 'me', 'give', 'our', 'under', 'name', 'very', 'through', 'just', 'form', 'much', 'great', 'think', 'say', 'help', 'low', 'line', 'before', 'turn', 'cause', 'same', 'mean', 'differ', 'move', 'right', 'boy', 'old', 'too', 'does', 'tell']
+
+# options for the indexer & merger
 $options = {
   :fragment => true,
   :elements => [
@@ -20,9 +22,12 @@ $options = {
     ],
     :split => '[ \/]',
     :token_processing => [
-      lambda { |token| return token.downcase },
-      lambda { |token| return token.gsub /[0-9\.,"()<>\';:\[\]{}+$\*_=~]/, '' },
-      lambda { |token| return token.stem }
+      lambda { |token| return token.gsub /[\.,"()<>\';:\[\]{}+$\*_=~]/, ''},  # remove garbage
+      lambda { |token| return token.gsub /[0-9]/, '' },                       # remove numbers
+      lambda { |token| return token.downcase },                               # case folding
+     # lambda { |token| return $stop_30.include?(token) ? nil : token }        # 30 stop words
+      lambda { |token| return $stop_150.include?(token) ? '' : token },       # 150 stop words
+      lambda { |token| return token.stem }                                    # stemming
     ]
   },
   :write => {
