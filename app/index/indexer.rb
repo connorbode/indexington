@@ -35,6 +35,7 @@ class Indexer
   # loads the file & parses
   def parse file
     begin
+      file.encode!('UTF-8', 'UTF-8', :invalid => :replace)
       doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
       doc.children().each do |article| 
         if article.kind_of? Nokogiri::XML::Element then
