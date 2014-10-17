@@ -39,7 +39,7 @@ class Tokenizer
         token = method.call(token)
       end
     end
-    token = nil if token.empty?
+    token = nil if token and token.empty?
     return token
   end
 end
