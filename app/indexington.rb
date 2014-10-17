@@ -67,8 +67,8 @@ get '/query/:query' do
   i = 0
   results.each do |result|
     xml_response << File.open('index/postings/' + result.to_s).read
-    break if i == limit
-    i += 1
+    # break if i == limit
+    # i += 1
   end
   xml_response << "</results>"
   xml_response
