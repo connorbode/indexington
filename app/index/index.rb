@@ -65,15 +65,17 @@ class Index
     terms = @tokenizer.tokenize q
     puts "searching for #{terms}"
     postings = []
+    started = false
     terms.each do |term|
       post_pointer = @dictionary[term]
       if not post_pointer.nil? then 
         if postings.empty? then
-          postings = get_postings_list(post_pointer.to_i)
+          postings = get_postings_list(post_pointer.to_i) if not started
         else
           postings = postings & get_postings_list(post_pointer.to_i)
         end
       end
+      started = true
     end
     return postings.sort.uniq
   end

@@ -21,10 +21,16 @@ describe 'index' do
   end
 
   describe 'query' do
-    it 'performs a query' do
+    it 'returns an empty list if there are no results' do
       index_path = File.expand_path "spec/fixtures/i0"
       i = Index.new({:index => index_path, :tokenizer => {:split => '[ \/]'}})
-      expect(i.query "afg against agenc").to eq [12,48,155,162]
+      expect(i.query "afg against agenc").to eq []
+    end
+
+    it 'merges two lists appropriately' do
+      index_path = File.expand_path "spec/fixtures/i6"
+      i = Index.new({:index => index_path, :tokenizer => {:split => '[ \/]'}})
+      expect(i.query "so tired").to eq [1,2]
     end
   end
 end
