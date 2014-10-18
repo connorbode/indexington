@@ -37,7 +37,6 @@ $options = {
   :index => 'index/index'
 }
 
-index = Index.new $options
 indexer = Indexer.new('', $options)
 
 # indexing process
@@ -67,6 +66,7 @@ end
 
 # run server
 set :public_folder, File.expand_path('app/public/dist')
+index = Index.new $options
 
 get '/query/:query' do
   results = index.query params[:query]

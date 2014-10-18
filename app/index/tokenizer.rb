@@ -1,22 +1,19 @@
-
-# 
-# Tokenizer.new {
-#   :split => regex to split on
-#   :case_fold => true,
-#   :methods => [ Procs or Lambdas]
-#   :rules => { regex rule => regex replace}
-# }
-# 
-
 class Tokenizer
 
   @@number_regex = '[0-9]'
 
+  # @options:
+  # => preprocessing: an array of lambda preprocessing methods to call on a 
+  #                    body of text before it is tokenized
+  # => split: a regex pattern to split the body of text into tokens on
+  # => token_processing: an array of lambda processing methods to call on
+  #                       each token
   def initialize options = {}
     @options = options
   end
 
-  # tokenize input
+  # runs preprocessing rules on a body of input text
+  # splits input text into tokens
   def tokenize input
     if @options[:preprocessing] then
       @options[:preprocessing].each { |method| input = method.call input }
@@ -25,7 +22,7 @@ class Tokenizer
     return normalize_list input.split r
   end
 
-  # normalize the tokenized list
+  # normalizes a list of tokens
   def normalize_list tokens
     tokens.map! { |t| normalize t }
     tokens.compact!
@@ -33,6 +30,7 @@ class Tokenizer
   end
 
   # normalize a single token
+  # runs a list of processing rules on a single list
   def normalize token
     if @options[:token_processing] then
       @options[:token_processing].each do |method|

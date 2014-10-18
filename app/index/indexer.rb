@@ -4,27 +4,19 @@ require 'byebug'
 require_relative './tokenizer.rb'
 require_relative './postings_list.rb'
 
-# Smallest Working Example
-# ========================
-# Builds an index from all .xml files in the working
-# directory.  Assumes that the XML documents do not
-# have a parent node.
-# 
-# Parses
-# 
-#
-# Index.new('*.xml', {
-#   :fragment => true,
-#   :elements => [
-#     { :tag => 'title' }
-#   ],
-#   :tokenizer => # tokenizer options
-# })
-
 class Indexer
 
-  # initializes the indexer on the supplied directory
-  def initialize index_dir, options
+  # initializes the indexer
+  # @options:
+  # => fragment: true if the XML does not have a parent node
+  # => tokenizer: options for the Tokenizer
+  # => write:
+  #    => postings: the folder to write separate postings to
+  #    => tmp_folder: the folder to write temp indexes to
+  # => 
+  # @doc_id: Used for the filename when saving indexed files as separate posts
+  # @dump_ctr: Used for the filename when dumping temporary indexes
+  def initialize options
     @options = options
     @tokenizer = Tokenizer.new @options[:tokenizer]
     @dictionary = {}
@@ -32,11 +24,13 @@ class Indexer
     @dump_ctr = 0
   end
 
-  # loads the file & parses
-  def parse file
+  # parses a file
+  # converts the file to XML object
+  # parses individual 
+  def parse file_contents
     begin
-      file.encode!('UTF-8', 'UTF-8', :invalid => :replace)
-      doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file) else Nokogiri::XML::Document.parse(file) end
+      file_contents.encode!('UTF-8', 'UTF-8', :invalid => :replace)
+      doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file_contents) else Nokogiri::XML::Document.parse(file_contents) end
       doc.children().each do |article| 
         if article.kind_of? Nokogiri::XML::Element then
           parse_article article
@@ -53,10 +47,10 @@ class Indexer
   # parses a single article
   def parse_article article
     begin
-      @options[:elements].each do |elem_desc|
-        elem = article.css(elem_desc[:tag])
+      @options[:elements].each do |elem|
+        elem = article.css(elem[:tag])
         tokens = @tokenizer.tokenize elem.text
-        tokens.each.with_index(1) { |token, index| parse_token token, index }
+        tokens.each.with_index(1) { |token, index| parse_token token }
       end
     rescue NoMemoryError
       dump
@@ -65,7 +59,7 @@ class Indexer
   end
 
   # parses a single token
-  def parse_token token, index
+  def parse_token token
     begin
       if @dictionary[token].nil? then
         @dictionary[token] = PostingsList.new
@@ -73,7 +67,7 @@ class Indexer
       @dictionary[token].add @doc_id
     rescue NoMemoryError
       dump
-      parse_token token, index
+      parse_token token
     end
   end
 

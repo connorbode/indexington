@@ -1,3 +1,8 @@
+#
+# These tools are used to calculate the number of unique terms 
+# in a dictionary and the number of postings in a postings lists file
+# 
+
 
 if not ARGV[0] then
   puts ""
