@@ -8,13 +8,20 @@
  # Controller of the uiApp
 ###
 angular.module('uiApp')
-  .controller 'ListCtrl', ($scope, Collection, Route) ->
+  .controller 'ListCtrl', ($scope, $timeout, Collection, Route) ->
+
+    # timeout for query
+    queryPromise = null
 
     # watch for query changes
+    $scope.queryChanged = (query) ->
+      $scope.results = []
+      runQ = -> $scope.runQuery(query)
+      $timeout.cancel(queryPromise) if queryPromise
+      queryPromise = $timeout(runQ, 300)
+
     $scope.runQuery = (query) ->
       $scope.results = Collection.query({query: query}) if query != ""
-      $scope.results.$promise.then ->
-        console.log $scope.results
 
     $scope.viewArticle = (article) ->
       Route.viewArticle(article)

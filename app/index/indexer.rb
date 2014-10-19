@@ -7,13 +7,15 @@ require_relative './postings_list.rb'
 class Indexer
 
   # initializes the indexer
+  #
   # @options:
   # => fragment: true if the XML does not have a parent node
   # => tokenizer: options for the Tokenizer
   # => write:
   #    => postings: the folder to write separate postings to
   #    => tmp_folder: the folder to write temp indexes to
-  # => 
+  # => elements: a list of XML tags to process
+  # 
   # @doc_id: Used for the filename when saving indexed files as separate posts
   # @dump_ctr: Used for the filename when dumping temporary indexes
   def initialize options
@@ -26,7 +28,7 @@ class Indexer
 
   # parses a file
   # converts the file to XML object
-  # parses individual 
+  # iterates articles
   def parse file_contents
     begin
       file_contents.encode!('UTF-8', 'UTF-8', :invalid => :replace)
@@ -44,7 +46,8 @@ class Indexer
     end
   end
 
-  # parses a single article
+  # processes the XML tags defined 
+  # as important in the options
   def parse_article article
     begin
       @options[:elements].each do |elem|
@@ -58,7 +61,8 @@ class Indexer
     end
   end
 
-  # parses a single token
+  # adds a post to a postings list
+  # or creates a new postings list for a token
   def parse_token token
     begin
       if @dictionary[token].nil? then

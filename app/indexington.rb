@@ -37,7 +37,7 @@ $options = {
   :index => 'index/index'
 }
 
-indexer = Indexer.new('', $options)
+indexer = Indexer.new($options)
 
 # indexing process
 if ARGV[0] then
