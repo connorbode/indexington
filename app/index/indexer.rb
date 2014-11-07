@@ -24,6 +24,8 @@ class Indexer
     @dictionary = {}
     @doc_id = 0
     @dump_ctr = 0
+    @doc_ctr = 0
+    @token_ctr = 0
   end
 
   # parses a file
@@ -38,6 +40,7 @@ class Indexer
           parse_article article
           write_article article if @options[:write][:postings]
           @doc_id += 1
+          @doc_ctr += 1
         end
       end
     rescue NoMemoryError
@@ -69,6 +72,7 @@ class Indexer
         @dictionary[token] = PostingsList.new
       end
       @dictionary[token].add @doc_id
+      @token_ctr += 1
     rescue NoMemoryError
       dump
       parse_token token
@@ -86,6 +90,7 @@ class Indexer
   def dump
     dict_file_name = @options[:write][:tmp_folder] + @dump_ctr.to_s + '.dict'
     postings_file_name = @options[:write][:tmp_folder] + @dump_ctr.to_s + '.post'
+    meta_file_name = @options[:write][:tmp_folder] + @dump_ctr.to_s + '.meta'
     puts "dumping tmp index #{@dump_ctr.to_s}"
     postings_file_head = 0
     File.open dict_file_name, 'w' do |dict_file|
@@ -105,6 +110,12 @@ class Indexer
         end
       end
     end
+    File.open meta_file_name, 'w' do |meta_file|
+      meta_file.puts @doc_ctr
+      meta_file.puts @token_ctr
+    end
+    @doc_ctr = 0
+    @token_ctr = 0
     @dump_ctr += 1
     @dictionary = {}
   end
