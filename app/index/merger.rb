@@ -11,7 +11,8 @@ class Merger
     @options = options
     @sources = @options[:sources].map do |source| 
       { dictionary: File.open(source + '.dict'),
-        postings_lists: File.open(source + '.post') }
+        postings_lists: File.open(source + '.post'),
+        meta_file_name: source + '.meta' }
     end
   end
 
@@ -21,7 +22,21 @@ class Merger
     dict = File.open @options[:destination] + '.dict', 'w'
     post = File.open @options[:destination] + '.post', 'w'
     postings_head = 0
-    @sources.each { |source| source[:term] = get_next_term(source) }
+
+    term_ctr = 0
+    doc_ctr = 0
+
+    @sources.each do |source|
+      source[:term] = get_next_term(source)
+      meta_file = File.open source[:meta_file_name]
+      doc_ctr += meta_file.gets.to_i
+      term_ctr += meta_file.gets.to_i
+    end
+
+    meta = File.open @options[:destination] + '.meta', 'w'
+    meta.puts doc_ctr
+    meta.puts term_ctr
+    meta.close
 
     loop do
       @sources.sort_by! { |source| source[:term][:term] }
