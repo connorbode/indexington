@@ -96,7 +96,8 @@ class Indexer
     File.open dict_file_name, 'w' do |dict_file|
       File.open postings_file_name, 'w' do |postings_file|
         Hash[@dictionary.sort].map do |term, postings|
-          dict_file.print "#{term}:#{postings_file_head};"
+          dict_file.print "#{term}:#{postings_file_head}:"
+          p_ctr = 0
           postings.list.each_with_index do |posting, index|
             s = posting.to_s
             postings_file.print s
@@ -106,7 +107,9 @@ class Indexer
             else
               postings_file.print ","
             end
+            p_ctr += 1
           end
+          dict_file.print "#{p_ctr};"
         end
       end
     end

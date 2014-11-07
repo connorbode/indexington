@@ -50,7 +50,7 @@ class Merger
           break
         end
       end
-      dict.print "#{@sources[0][:term][:term]}:#{postings_head};"
+      dict.print "#{@sources[0][:term][:term]}:#{postings_head}:#{@sources[0][:term][:count]};"
       postings_head += write_postings_list post, postings_sources
 
       lim = postings_sources.length
@@ -122,6 +122,7 @@ class Merger
   def get_next_term s
     term = ""
     post_ptr = ""
+    count = ""
     loop do
       char = s[:dictionary].gets 1
       return nil if char.nil?
@@ -131,10 +132,16 @@ class Merger
     loop do
       char = s[:dictionary].gets 1
       return nil if char.nil?
-      break if char == ";"
+      break if char == ":"
       post_ptr << char
     end
-    return {term: term, post_ptr: post_ptr}
+    loop do
+      char = s[:dictionary].gets 1
+      return nil if char.nil?
+      break if char == ";"
+      count << char
+    end
+    return {term: term, post_ptr: post_ptr, count: count}
   end
 
 end
