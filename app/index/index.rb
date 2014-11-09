@@ -108,7 +108,7 @@ class Index
       score = scores.reduce(:+)
       {:score => score, posting: posting}
     end
-    return ranked.sort_by { |r| r[:score] }
+    return ranked.sort_by { |r| -r[:score] }
   end
 
   # generates idf for a term
