@@ -98,9 +98,9 @@ class Indexer
         Hash[@dictionary.sort].map do |term, postings|
           dict_file.print "#{term}:#{postings_file_head}:"
           p_ctr = 0
-          postings.list.each_with_index do |posting, index|
+          postings.list.each_with_index do |(posting, count), index|
             s = posting.to_s
-            postings_file.print s
+            postings_file.print "#{s}:#{count}"
             postings_file_head += s.length + 1
             if index == postings.list.size - 1 then 
               postings_file.print ";"

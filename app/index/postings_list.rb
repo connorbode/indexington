@@ -4,12 +4,16 @@ class PostingsList
 
   # initializes an empty postings list
   def initialize
-    @list = []
+    @list = {}
   end
 
   # adds an occurrence to a postings list
   def add document
     raise NoMemoryError if @list.length > 20 
-    @list.push document if not @list.include? document
+    if @list.has_key? document then
+      @list[document] += 1
+    else
+      @list[document] = 1
+    end
   end
 end
