@@ -58,49 +58,76 @@ class Index
   end
 
   # retrieves the postings list from a given position
-  def get_postings_list position
+  def get_postings_list position, postings, term
     @postings_lists.seek position
-    list = []
     loop do
       post = ""
+      term_frequency = ""
       char = ""
       loop do
         char = @postings_lists.gets 1
-        break if char == "," or char == ";"
+        break if char == ":"
         post << char
+      end
+      loop do
+        char = @postings_lists.gets 1
+        break if char == "," or char == ";"
+        term_frequency << char
       end 
-      list << post.to_i
+      if postings[post.to_i].nil? then
+        postings[post.to_i] = { term => term_frequency.to_i }
+      else 
+        postings[post.to_i][term] = term_frequency.to_i
+      end
       break if char == ";"
     end
-    return list
   end
 
   # performs a query
   def query q
     terms = @tokenizer.tokenize q
     puts "searching for #{terms}"
-    postings = []
     started = false
+    postings = {}
     terms.each do |term|
-      puts "#{term} idf: #{idf term}"
       post_pointer = @dictionary[term][:position]
       if not post_pointer.nil? then 
-        if postings.empty? then
-          postings = get_postings_list(post_pointer) if not started
-        else
-          postings = postings & get_postings_list(post_pointer)
-        end
+        get_postings_list(post_pointer, postings, term)
       end
-      started = true
     end
-    return postings.sort.uniq
+    return bm25 postings
+  end
+
+  # runs bm25 on each posting
+  def bm25 postings
+    ranked = postings.map do |posting, terms|
+      doc = File.open('index/postings/' + posting.to_s)
+      document_length = doc.gets.to_i
+      doc.close
+      scores = terms.map { |term, term_frequency| bm25_score term, term_frequency, document_length }
+      score = scores.reduce(:+)
+      {:score => score, posting: posting}
+    end
+    return ranked.sort_by { |r| r[:score] }
   end
 
   # generates idf for a term
   def idf term
     total_docs = @index_meta[:number_of_documents]
+    return 0 if @dictionary[term].nil?
     document_frequency = @dictionary[term][:count]
-    return 0 if document_frequency.nil?
     return Math.log10(total_docs / document_frequency)
+  end
+
+  # generates the bm25 score for a term
+  # in a document
+  def bm25_score term, term_frequency, document_length
+    k1 = @options[:bm25][:k1]
+    b = @options[:bm25][:b]
+    avg_document_length = @index_meta[:collection_length] / @index_meta[:number_of_documents]
+    idf_score = idf term
+    numerator = term_frequency * (k1 + 1)
+    denominator = term_frequency + k1 * (1 - b + b * (document_length / avg_document_length))
+    return idf_score * (numerator / denominator)
   end
 end

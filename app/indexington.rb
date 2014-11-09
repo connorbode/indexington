@@ -34,7 +34,11 @@ $options = {
     :postings => "index/postings/",
     :tmp_folder => "index/tmp/i"
   },
-  :index => 'index/index'
+  :index => 'index/index',
+  :bm25 => {
+    :k1 => 1.5,
+    :b => 0.75
+  }
 }
 
 indexer = Indexer.new($options)
@@ -74,9 +78,9 @@ get '/query/:query' do
   limit = 10
   i = 0
   results.each do |result|
-    xml_response << File.open('index/postings/' + result.to_s).read
-    # break if i == limit
-    # i += 1
+    xml_response << File.open('index/postings/' + result[:posting].to_s).read
+    break if i == limit
+    i += 1
   end
   xml_response << "</results>"
   xml_response
