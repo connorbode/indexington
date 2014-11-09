@@ -75,7 +75,7 @@ index = Index.new $options
 get '/query/:query' do
   results = index.query params[:query]
   xml_response = "<results>"
-  limit = 10
+  limit = params[:limit] || 10
   i = 0
   results.each do |result|
     xml_response << File.open('index/postings/' + result[:posting].to_s).read
