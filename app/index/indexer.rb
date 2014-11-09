@@ -100,8 +100,9 @@ class Indexer
           p_ctr = 0
           postings.list.each_with_index do |(posting, count), index|
             s = posting.to_s
+            c = count.to_s
             postings_file.print "#{s}:#{count}"
-            postings_file_head += s.length + 1
+            postings_file_head += s.length + c.length + 2
             if index == postings.list.size - 1 then 
               postings_file.print ";"
             else

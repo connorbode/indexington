@@ -85,7 +85,7 @@ class Merger
       p = postings_lists[0][:next_post][:post].to_s
       c = postings_lists[0][:next_post][:count].to_s
       if p != last_post then
-        chars += p.length + 1
+        chars += p.length + c.length + 2
         post.print "," if not first_post
         post.print "#{p}:#{c}"
       end
