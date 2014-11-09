@@ -83,10 +83,11 @@ class Merger
     loop do
       postings_lists.sort_by! { |list| list[:next_post][:post] }
       p = postings_lists[0][:next_post][:post].to_s
+      c = postings_lists[0][:next_post][:count].to_s
       if p != last_post then
         chars += p.length + 1
         post.print "," if not first_post
-        post.print p
+        post.print "#{p}:#{c}"
       end
       first_post = false
       if postings_lists[0][:next_post][:last] then
@@ -105,7 +106,14 @@ class Merger
   # sets a flag if it is the last
   def get_next_post source
     post = ""
+    count = ""
     last = false
+    c = ""
+    loop do
+      c = source.gets 1
+      break if c == ":"
+      post << c
+    end
     loop do
       c = source.gets 1
       break if c == ","
@@ -113,9 +121,9 @@ class Merger
         last = true
         break
       end
-      post << c
+      count << c
     end
-    return { post: post.to_i, last: last }
+    return { post: post.to_i, count: count.to_i, last: last }
   end
 
   # retrieves the next term from a source
