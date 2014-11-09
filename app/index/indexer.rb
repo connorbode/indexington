@@ -37,11 +37,11 @@ class Indexer
       doc = if @options[:fragment] then Nokogiri::XML::DocumentFragment.parse(file_contents) else Nokogiri::XML::Document.parse(file_contents) end
       doc.children().each do |article| 
         if article.kind_of? Nokogiri::XML::Element then
-          parse_article article
-          write_article article if @options[:write][:postings]
+          length = parse_article article
+          write_article article, length if @options[:write][:postings]
           @doc_id += 1
           @doc_ctr += 1
-        end
+        end 
       end
     rescue NoMemoryError
       dump
@@ -57,10 +57,11 @@ class Indexer
         elem = article.css(elem[:tag])
         tokens = @tokenizer.tokenize elem.text
         tokens.each.with_index(1) { |token, index| parse_token token }
+        return tokens.length
       end
     rescue NoMemoryError
       dump
-      parse_article article
+      return parse_article article
     end
   end
 
@@ -80,8 +81,9 @@ class Indexer
   end
 
   # writes a single article to disk
-  def write_article article
+  def write_article article, length
     File.open (@options[:write][:postings] + @doc_id.to_s), 'w' do |f|
+      f.puts length
       article.write_xml_to f
     end
   end
