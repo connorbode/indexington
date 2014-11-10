@@ -90,9 +90,8 @@ class Index
     started = false
     postings = {}
     terms.each do |term|
-      post_pointer = @dictionary[term][:position]
-      if not post_pointer.nil? then 
-        get_postings_list(post_pointer, postings, term)
+      if not @dictionary[term].nil? then 
+        get_postings_list(@dictionary[term][:position], postings, term)
       end
     end
     return bm25 postings
